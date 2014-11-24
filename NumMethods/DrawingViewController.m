@@ -185,7 +185,7 @@
         temp.y -= center.y;
         
         // normalize point
-        temp.x /= width;
+        temp.x /= width/2;
         temp.y /= height;
         
         NSLog(@"%f %f", temp.x, temp.y);
@@ -228,17 +228,30 @@
 }
 
 -(IBAction)proceed:(id)sender {
-    if (!points || points.count < 2) {
+    /*if (!points || points.count < 2) {
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Інфо" message:@"Для продовження намалюйте фігуру" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [alert show];
         return;
-    }
+    }*/
+    
+    points = [self drawSinus];
 
     [self normalizeFigure];
 
     if (self.delegate) {
-        [self.delegate didDrawPoints:points withRipPointNumbers:rip_point_numbers inViewController:self];
+        //[self.delegate didDrawPoints:points withRipPointNumbers:rip_point_numbers inViewController:self];
+        [self.delegate didDrawPoints:points withRipPointNumbers:[NSMutableArray arrayWithObject:[NSNumber numberWithInt:14]] inViewController:self];
     }
+}
+
+-(NSMutableArray*)drawSinus {
+    NSMutableArray* resultPoints = [NSMutableArray new];
+    for (double x = -3; x <= 5; x+= 0.1) {
+        double y = sin(x);
+        CGPoint point = CGPointMake(x, y);
+        [resultPoints addObject:[NSValue valueWithCGPoint:point]];
+    }
+    return resultPoints;
 }
 
 @end
