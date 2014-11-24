@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="lab1ViewController">
+            <connections>
+                <outlet property="imageView" destination="58" id="63"/>
+                <outlet property="modeControl" destination="66" id="67"/>
+                <outlet property="view" destination="1" id="3"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="1">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="58">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="525"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </imageView>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="66">
+                    <rect key="frame" x="107" y="534" width="208" height="29"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <segments>
+                        <segment title="Фі"/>
+                        <segment title="Псі"/>
+                        <segment title="Тиск"/>
+                    </segments>
+                </segmentedControl>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yxt-tP-KFe">
+                    <rect key="frame" x="0.0" y="533" width="104" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="104" id="46X-r0-Oas"/>
+                    </constraints>
+                    <state key="normal" title="Легенда">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="showPopover:" destination="-1" eventType="touchUpInside" id="YzY-dG-yVc"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="58" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="96T-WG-yuT"/>
+                <constraint firstItem="66" firstAttribute="leading" secondItem="Yxt-tP-KFe" secondAttribute="trailing" constant="3" id="ABD-zg-Vdz"/>
+                <constraint firstAttribute="bottom" secondItem="Yxt-tP-KFe" secondAttribute="bottom" constant="5" id="OuJ-8P-1fB"/>
+                <constraint firstItem="58" firstAttribute="top" secondItem="1" secondAttribute="top" id="PZ4-Gq-pfp"/>
+                <constraint firstAttribute="trailing" secondItem="58" secondAttribute="trailing" id="Zp9-uf-Xvv"/>
+                <constraint firstItem="Yxt-tP-KFe" firstAttribute="centerY" secondItem="66" secondAttribute="centerY" id="f8c-L6-YmV"/>
+                <constraint firstItem="Yxt-tP-KFe" firstAttribute="top" secondItem="58" secondAttribute="bottom" constant="8" symbolic="YES" id="liB-nY-TIQ"/>
+                <constraint firstItem="58" firstAttribute="leading" secondItem="Yxt-tP-KFe" secondAttribute="leading" id="scr-tm-sB1"/>
+                <constraint firstAttribute="trailing" secondItem="66" secondAttribute="trailing" constant="5" id="xVy-Bf-QCf"/>
+            </constraints>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+        </view>
+    </objects>
+</document>

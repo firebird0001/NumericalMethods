@@ -7,12 +7,20 @@
 //
 
 #import "highdreamAppDelegate.h"
+#import "DrawingViewController.h"
+#import "lab1ViewController.h"
 
 @implementation highdreamAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    // Override point for customization after application launch.
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+
+    lab1ViewController* viewController = [[lab1ViewController alloc] initWithNibName:@"lab1ViewController" bundle:nil];
+    UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    self.window.rootViewController = navController;
+    [self.window makeKeyAndVisible];
+
     return YES;
 }
 							

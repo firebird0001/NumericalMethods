@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DrawingViewController">
+            <connections>
+                <outlet property="clearButton" destination="PRG-zw-JYm" id="Imo-pi-rF9"/>
+                <outlet property="drawImageView" destination="MMm-V0-nzA" id="8uI-yE-RGc"/>
+                <outlet property="proceedButton" destination="7Fm-fT-F6O" id="tvx-gC-6oC"/>
+                <outlet property="ripButton" destination="zOt-eX-XgJ" id="mPg-nk-iDt"/>
+                <outlet property="tempDrawImage" destination="6Jh-hB-3M0" id="pij-60-HY3"/>
+                <outlet property="view" destination="1" id="3"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="1">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MMm-V0-nzA">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="510"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6Jh-hB-3M0">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="510"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Fm-fT-F6O">
+                    <rect key="frame" x="230" y="509" width="90" height="59"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <color key="backgroundColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="Зберегти">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="proceed:" destination="-1" eventType="touchUpInside" id="dno-IK-p9z"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PRG-zw-JYm">
+                    <rect key="frame" x="0.0" y="509" width="90" height="59"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="90" id="8ae-YK-lch"/>
+                        <constraint firstAttribute="height" constant="59" id="yrC-Tc-2eT"/>
+                    </constraints>
+                    <state key="normal" title="Очистити">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="clear:" destination="-1" eventType="touchUpInside" id="5Xh-IR-S2r"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zOt-eX-XgJ">
+                    <rect key="frame" x="98" y="509" width="124" height="59"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="Точка відриву">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="rip_point:" destination="-1" eventType="touchUpInside" id="jMN-HK-wDY"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="zOt-eX-XgJ" firstAttribute="top" secondItem="7Fm-fT-F6O" secondAttribute="top" id="4Da-g4-Kpi"/>
+                <constraint firstItem="6Jh-hB-3M0" firstAttribute="top" secondItem="1" secondAttribute="top" id="5Ou-lJ-Ax9"/>
+                <constraint firstItem="MMm-V0-nzA" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="8t2-wW-kQb"/>
+                <constraint firstItem="MMm-V0-nzA" firstAttribute="centerX" secondItem="zOt-eX-XgJ" secondAttribute="centerX" id="B6X-9Q-R7N"/>
+                <constraint firstItem="MMm-V0-nzA" firstAttribute="trailing" secondItem="6Jh-hB-3M0" secondAttribute="trailing" id="BX5-ec-FS9"/>
+                <constraint firstItem="zOt-eX-XgJ" firstAttribute="top" secondItem="PRG-zw-JYm" secondAttribute="top" id="GGI-9W-nnF"/>
+                <constraint firstItem="7Fm-fT-F6O" firstAttribute="leading" secondItem="zOt-eX-XgJ" secondAttribute="trailing" constant="8" symbolic="YES" id="JRH-Ji-3n3"/>
+                <constraint firstAttribute="bottom" secondItem="7Fm-fT-F6O" secondAttribute="bottom" id="OlY-Tn-mTF"/>
+                <constraint firstAttribute="trailing" secondItem="7Fm-fT-F6O" secondAttribute="trailing" id="ZLX-tB-Pvv"/>
+                <constraint firstItem="MMm-V0-nzA" firstAttribute="leading" secondItem="6Jh-hB-3M0" secondAttribute="leading" id="ZTm-gt-RxM"/>
+                <constraint firstItem="6Jh-hB-3M0" firstAttribute="trailing" secondItem="7Fm-fT-F6O" secondAttribute="trailing" id="cqV-NG-7Fy"/>
+                <constraint firstItem="zOt-eX-XgJ" firstAttribute="leading" secondItem="PRG-zw-JYm" secondAttribute="trailing" constant="8" symbolic="YES" id="fu8-uP-LXK"/>
+                <constraint firstItem="zOt-eX-XgJ" firstAttribute="bottom" secondItem="7Fm-fT-F6O" secondAttribute="bottom" id="fwT-3q-8aO"/>
+                <constraint firstItem="6Jh-hB-3M0" firstAttribute="bottom" secondItem="MMm-V0-nzA" secondAttribute="bottom" id="gKG-Fj-MPa"/>
+                <constraint firstAttribute="bottom" secondItem="6Jh-hB-3M0" secondAttribute="bottom" constant="58" id="hwu-Ep-gmG"/>
+                <constraint firstItem="MMm-V0-nzA" firstAttribute="top" secondItem="6Jh-hB-3M0" secondAttribute="top" id="kTT-RW-c5P"/>
+                <constraint firstItem="zOt-eX-XgJ" firstAttribute="bottom" secondItem="PRG-zw-JYm" secondAttribute="bottom" id="tAY-pC-6cO"/>
+                <constraint firstItem="PRG-zw-JYm" firstAttribute="leading" secondItem="6Jh-hB-3M0" secondAttribute="leading" id="ueL-f1-ZLm"/>
+            </constraints>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+        </view>
+    </objects>
+</document>
