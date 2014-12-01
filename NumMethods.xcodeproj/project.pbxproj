@@ -338,7 +338,7 @@
 				ORGANIZATIONNAME = "Andrii Kulian";
 				TargetAttributes = {
 					1BD2475E17DF0AC4003926CF = {
-						DevelopmentTeam = B35229RN68;
+						DevelopmentTeam = TTG9S6NFHC;
 					};
 				};
 			};

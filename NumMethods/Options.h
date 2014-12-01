@@ -11,7 +11,8 @@
 typedef enum {
     MODE_PHI,
     MODE_PSI,
-    MODE_CP
+    MODE_CP,
+    MODE_TRACE
 } mode;
 
 @interface Options : NSObject
@@ -30,6 +31,8 @@ typedef enum {
 @property (nonatomic, assign) int time;
 @property (nonatomic, assign) int v_window_size;
 @property (nonatomic, assign) int value_window_size;
+@property (nonatomic, assign) int trace_time;
+@property (nonatomic, assign) double trace_real_width;
 
 -(Options*)initDefault;
 

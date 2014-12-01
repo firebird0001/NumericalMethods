@@ -18,6 +18,7 @@
 +(UIImage *)drawPoints:(NSArray*)points onImage:(UIImage *)inputImage;
 +(UIImage *)drawPoints:(NSArray*)points withColor:(UIColor*)color onImage:(UIImage *)inputImage;
 +(UIImage *)drawPoints:(point*)points number:(int)point_number withColor:(UIColor*)color onImage:(UIImage *)inputImage;
++(UIImage *)drawPoints:(point*)points number:(int)point_number withWidth:(float)width withColor:(UIColor*)color onImage:(UIImage *)inputImage;
 +(UIImage *)drawConnectedPoints:(point*)points number:(int)point_number withWidth:(double)width andColor:(UIColor*)color onImage:(UIImage*) inputImage;
 +(UIImage *)drawVectors:(vect*)vectors number:(int)number withWidth:(double)width andColor:(UIColor*)color onImage:(UIImage *)inputImage;
 +(UIImage *)combineImages:(NSArray*)images;

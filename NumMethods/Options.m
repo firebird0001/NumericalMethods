@@ -27,6 +27,8 @@
     self.time = 12;
     self.v_window_size = 30;
     self.value_window_size = 16;
+    self.trace_time = 300;
+    self.trace_real_width = 18.;
     
     
     return self;
