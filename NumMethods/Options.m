@@ -18,7 +18,7 @@
     self.gamma_0 = 0.1;
     self.number_of_points = 30;
     self.number_of_colors = 20;
-    self.drawing_mode = MODE_PHI;
+    self.drawing_mode = MODE_TRACE;
     self.show_V = YES;
     self.real_width = 3.;
     self.real_height = 8;
@@ -27,7 +27,7 @@
     self.time = 12;
     self.v_window_size = 30;
     self.value_window_size = 16;
-    self.trace_time = 300;
+    self.trace_time = 600;
     self.trace_real_width = 18.;
     
     

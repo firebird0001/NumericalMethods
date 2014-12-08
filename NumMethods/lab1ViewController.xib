@@ -26,7 +26,7 @@
                         <segment title="Фі"/>
                         <segment title="Псі"/>
                         <segment title="Тиск"/>
-                        <segment title="Вихор"/>
+                        <segment title="Слід"/>
                     </segments>
                 </segmentedControl>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yxt-tP-KFe">

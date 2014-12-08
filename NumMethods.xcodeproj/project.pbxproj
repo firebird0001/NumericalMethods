@@ -101,7 +101,7 @@
 		1B8606E7184CFA5B005D34FB /* DrawingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingViewController.h; sourceTree = "<group>"; };
 		1B8606E8184CFA5B005D34FB /* DrawingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawingViewController.m; sourceTree = "<group>"; };
 		1B8606E9184CFA5B005D34FB /* DrawingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DrawingViewController.xib; sourceTree = "<group>"; };
-		1BD2475F17DF0AC4003926CF /* Contour 2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Contour 2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BD2475F17DF0AC4003926CF /* Contour 2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Contour 2.app"; path = "Contour 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BD2476217DF0AC4003926CF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1BD2476417DF0AC4003926CF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1BD2476617DF0AC4003926CF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -310,9 +310,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1BD2475E17DF0AC4003926CF /* Contour 2 */ = {
+		1BD2475E17DF0AC4003926CF /* Trace */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1BD2478517DF0AC4003926CF /* Build configuration list for PBXNativeTarget "Contour 2" */;
+			buildConfigurationList = 1BD2478517DF0AC4003926CF /* Build configuration list for PBXNativeTarget "Trace" */;
 			buildPhases = (
 				1BD2475B17DF0AC4003926CF /* Sources */,
 				1BD2475C17DF0AC4003926CF /* Frameworks */,
@@ -322,7 +322,7 @@
 			);
 			dependencies = (
 			);
-			name = "Contour 2";
+			name = Trace;
 			productName = NumMethods;
 			productReference = 1BD2475F17DF0AC4003926CF /* Contour 2.app */;
 			productType = "com.apple.product-type.application";
@@ -354,7 +354,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1BD2475E17DF0AC4003926CF /* Contour 2 */,
+				1BD2475E17DF0AC4003926CF /* Trace */,
 			);
 		};
 /* End PBXProject section */
@@ -549,7 +549,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1BD2478517DF0AC4003926CF /* Build configuration list for PBXNativeTarget "Contour 2" */ = {
+		1BD2478517DF0AC4003926CF /* Build configuration list for PBXNativeTarget "Trace" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1BD2478617DF0AC4003926CF /* Debug */,
