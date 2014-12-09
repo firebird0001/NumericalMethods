@@ -141,10 +141,7 @@ point* V_2(point* p, point** p_arr, double* gamma_t, int m, double alpha, point*
     
     for (int k = 0; k < num_p; k++) {
         for (int j = 0; j < n_t; j++) {
-            //printf("r1 x: %f, y: %f\n", ((*r)[k]+j)->x, ((*r)[k]+j)->y);
-            //printf("j_n_p[%d][%d] =  %f\n", k,j, (*j_n_p)[k][j]);
             point* temp = V_j(p, (*r)[k]+j, delta);
-            //printf("V_j x= %f, y= %f\n", temp->x, temp->y);
 
             point* temp2 = mul_point(temp, (*j_n_p)[k][j]);
             result->x += temp2->x;
@@ -153,7 +150,6 @@ point* V_2(point* p, point** p_arr, double* gamma_t, int m, double alpha, point*
             free(temp2);
         }
     }
-    //printf("result2 x: %f y: %f\n", result->x, result->y);
     
     return result;
 }

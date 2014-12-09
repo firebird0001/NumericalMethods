@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "lab1.h"
+#include "TraceCallback.h"
 
 void get_points_from_simple_figure(figure* fig, int point_number, point** points_of_interest, point** collocation_points, point** normal_vectors, int isTest) {
     if (!fig || !points_of_interest || !collocation_points) {
@@ -152,33 +153,42 @@ void place_for_point(point* p1, point* p2, double weight, point* result) {
     result->y = (1-weight)*p1->y + weight*p2->y;
 }
 
-double** find_Gamma_2(point* collocation_points, point* points_of_interest, point* normal_points, int* separation_points_positions, int time, int p, double*** j_n_p, point*** r, int m, double alpha, double gamma_0, double delta, double** delta_t) {
+void find_Gamma_2(void* callback, double*** gamma_r, point* collocation_points, point* points_of_interest, point* normal_points, int* separation_points_positions, int time, int p, double*** j_n_p, point*** r, int m, double alpha, double gamma_0, double delta, double** delta_t) {
     if (!collocation_points || !points_of_interest || !normal_points || !separation_points_positions || !j_n_p || !r) {
         // Wrong input data
-        return NULL;
+        return;
     }
     double** A = (double**)malloc(sizeof(double*) * m);
+    double** A2 = (double**)malloc(sizeof(double*) * m);
     double* B = (double*)malloc(sizeof(double) * m);
     *j_n_p = (double**)malloc(sizeof(double*)*p);
     *r = (point**)malloc(sizeof(point*)*p);
     double** gamma = (double**)malloc(sizeof(double*) * (time+1));
+    *gamma_r = gamma;
     *delta_t = (double*)malloc(sizeof(double) * time);
     if (!A || !B || !*j_n_p || !gamma || !*r || !*delta_t) {
         // Low memory
-        return NULL;
+        return;
     }
     for (int i = 0; i < m; i++) {
         A[i] = (double*)malloc(sizeof(double)*m);
         if (!A[i]) {
             // Low memory
-            return NULL;
+            return;
+        }
+    }
+    for (int i = 0; i < m; i++) {
+        A2[i] = (double*)malloc(sizeof(double)*m);
+        if (!A[i]) {
+            // Low memory
+            return;
         }
     }
     for (int i = 0; i < p; i++) {
         (*j_n_p)[i] = (double*)malloc(sizeof(double)*(time+1));
         if (!(*j_n_p)[i]) {
             // Low memory
-            return NULL;
+            return;
         }
         (*j_n_p)[i][0] = 0.0f;
     }
@@ -187,7 +197,7 @@ double** find_Gamma_2(point* collocation_points, point* points_of_interest, poin
         (*r)[i] = (point*)malloc(sizeof(point)*(time+1));
         if (!(*r)[i]) {
             // Low memory
-            return NULL;
+            return;
         }
         
         (*r)[i][0].x = points_of_interest[separation_points_positions[i]].x;
@@ -197,14 +207,24 @@ double** find_Gamma_2(point* collocation_points, point* points_of_interest, poin
     
     point* v_inf = V_inf(alpha);
     
+    for (int k = 0; k < m - 1; k++) {
+        for (int j = 0; j < m; j++) {
+            point* temp = V_j(collocation_points + k, points_of_interest + j, delta);
+            A[k][j] = dot_product(temp, normal_points + k);
+            free(temp);
+        }
+    }
+    
     // START CALCULATIONS
     for (int current_time = 0; current_time < time; current_time++) {
+        if (current_time > 0 && current_time % 1 == 0) {
+            drawCurrentTrace(callback, current_time);
+        }
+        
         // there is (m-1) point of collocation
         for (int k = 0; k < m - 1; k++) {
             for (int j = 0; j < m; j++) {
-                point* temp = V_j(collocation_points + k, points_of_interest + j, delta);
-                A[k][j] = dot_product(temp, normal_points + k);
-                free(temp);
+                A2[k][j] = A[k][j];
             }
             
             B[k] = -dot_product(v_inf, normal_points + k);
@@ -219,10 +239,11 @@ double** find_Gamma_2(point* collocation_points, point* points_of_interest, poin
                 }
             }
         }
+
         
         // m-th equation
         for (int k = 0; k < m; k++) {
-            A[m-1][k] = 1.0f;
+            A2[m-1][k] = 1.0f;
         }
         B[m-1] = 0;
         if (current_time > 0) {
@@ -233,14 +254,12 @@ double** find_Gamma_2(point* collocation_points, point* points_of_interest, poin
             }
         }
         
-        gamma[current_time] = Gauss(A, B, m);
+        gamma[current_time] = Gauss(A2, B, m);
         if (!gamma[current_time]) {
             // Error calculating gamma
-            return NULL;
+            return;
         }
-        /*for (int k = 0; k < m; k++) {
-            printf("gamma[%d][%d] = %f\n", current_time, k, gamma[current_time][k]);
-        }*/
+        
         for (int i = 0; i < p; i++) {
             (*j_n_p)[i][current_time] = gamma[current_time][separation_points_positions[i]];
         }
@@ -255,88 +274,23 @@ double** find_Gamma_2(point* collocation_points, point* points_of_interest, poin
         
         for (int i = 0; i < p; i++) {
             point* temp = V_2((*r)[i]+current_time, &points_of_interest, gamma[current_time], m, alpha, r, j_n_p, current_time, p, delta);
-            //printf("r x: %f y: %f\n", ((*r)[i]+current_time)->x, ((*r)[i]+current_time)->y);
-            //printf("result x: %f y: %f\n", temp->x, temp->y);
-            //(*r)[i][current_time+1].x = temp->x;
-            //(*r)[i][current_time+1].y = temp->y;
             current_delta = delta/length(temp);
             if (current_delta < (*delta_t)[current_time]) {
                 (*delta_t)[current_time] = current_delta;
             }
-            //printf("current_time: %d delta_t: %.10f length: %f\n", current_time, (*delta_t)[current_time], length(temp));
             free(temp);
         }
-        //printf("current_time: %d delta_t: %.10f \n", current_time, (*delta_t)[current_time]);
-
+        
         for (int j = current_time; j >= 0; j--) {
             for (int i = 0; i < p; i++) {
                 point* V_in_cur_point = V_2((*r)[i]+j, &points_of_interest, gamma[current_time], m, alpha, r, j_n_p, current_time, p, delta);
-                //printf("V in point R x: %f y: %f result x: %f, y: %f\n", ((*r)[i]+j)->x, ((*r)[i]+j)->y, V_in_cur_point->x, V_in_cur_point->y);
                 point* temp = mul_point(V_in_cur_point, (*delta_t)[current_time]);
                 point* temp2 = add_points((*r)[i]+j, temp);
-                //printf("result1 x: %f y: %f\n", temp->x, temp->y);
-                //printf("result2 x: %f y: %f\n", temp2->x, temp2->y);
                 (*r)[i][j].x = temp2->x;
                 (*r)[i][j].y = temp2->y;
-                //printf("time: %d, point: %d, x: %f, y: %f\n", current_time, i, temp2->x, temp2->y);
                 free(V_in_cur_point);
                 free(temp);
                 free(temp2);
-                
-                // first find the nearest part
-                /*double min_dist = MAXFLOAT;
-                double cur_dist;
-                int min_part = 0;
-                for (int k = 0; k < m-1; k++) {
-                    cur_dist = fabs(dist_from_point_to_segment((*r)[i]+j, points_of_interest+k, points_of_interest+k+1));
-                    if (cur_dist < min_dist) {
-                        min_dist = cur_dist;
-                        min_part = k;
-                    }
-                }
-                
-                // then find signed distance
-                double min_dist_prev = dist_from_point_to_segment((*r)[i]+j-1, points_of_interest+min_part, points_of_interest+min_part+1);
-                min_dist = dist_from_point_to_segment((*r)[i]+j, points_of_interest+min_part, points_of_interest+min_part+1);
-                
-                double eps = 0.015;
-                
-                /*if (t == 1) {
-                 (*r)[i][t+1].x += 1;
-                 (*r)[i][t+1].y += 1;
-                 }*/
-                
-                /*// close to line or different signs
-                if (current_time > 0 && (fabs(min_dist) < eps || min_dist*min_dist_prev < 0)) {
-                    // need to move
-                    point* p1 = (point*)malloc(sizeof(point));
-                    point* p2 = (point*)malloc(sizeof(point));
-                    points_on_normal_line_with_point((*r)[i]+j, points_of_interest+min_part, points_of_interest+min_part+1, 3*eps, p1, p2);
-                    
-                    int point_sign = side_of_line((*r)[i]+j, points_of_interest+min_part, points_of_interest+min_part+1);
-                    int p1_sign = side_of_line(p1, points_of_interest+min_part, points_of_interest+min_part+1);
-                    int p2_sign = side_of_line(p2, points_of_interest+min_part, points_of_interest+min_part+1);
-                    if (min_dist*min_dist_prev < 0) {
-                        if (point_sign*p1_sign < 0) {
-                            (*r)[i][j].x = p1->x;
-                            (*r)[i][j].y = p1->y;
-                        } else {
-                            (*r)[i][j].x = p2->x;
-                            (*r)[i][j].y = p2->y;
-                        }
-                    } else {
-                        // to close - looking for same sign
-                        if (point_sign*p1_sign > 0) {
-                            (*r)[i][j].x = p1->x;
-                            (*r)[i][j].y = p1->y;
-                        } else {
-                            (*r)[i][j].x = p2->x;
-                            (*r)[i][j].y = p2->y;
-                        }
-                    }
-                    double new_dist = dist_from_point_to_segment((*r)[i]+j, points_of_interest+min_part, points_of_interest+min_part+1);
-                    printf("new dist %f\n", new_dist);
-                }*/
             }
         }
     }
@@ -347,7 +301,7 @@ double** find_Gamma_2(point* collocation_points, point* points_of_interest, poin
     free(A);
     free(B);
     
-    return gamma;
+    drawCurrentTrace(callback, time - 1);
 }
 
 double* find_Gamma(point* collocation_points, point* points_of_interest, point* normal_points, int m, double alpha, double gamma_0, double delta) {
@@ -849,41 +803,15 @@ double** Cp_for_rect_2(point* p_start, double step, int width, int height, point
         }
         p.y = p_start->y + i * step;
         for (int j = 0; j < width; j++) {
-            p.x = p_start->x + j * step;//Cp_2(&p, p_arr, j_n_p, gamma_t, m, alpha, time, r, num_p, delta, delta_t, collocation_points, separation_point_positions);
+            p.x = p_start->x + j * step;
             result[i][j] = result_squares[(i/value_window_size) * squares_in_row + j/value_window_size];
-            //printf("square_num : %d value : %f\n", (i/square_size) * squares_in_row + j/square_size, result_squares[(i/square_size) * squares_in_row + j/square_size]);
-            // cut too low or too high values
             if (result[i][j] < minimums[cur_min%number_to_remove]) {
-                //printf("min: %f %d %d\n", result[i][j], i, j);
                 minimums[(++cur_min)%number_to_remove] = result[i][j];
             } else if (result[i][j] > maximums[cur_min%number_to_remove]) {
-                //printf("max: %f %d %d\n", result[i][j], i, j);
                 maximums[(++cur_max)%number_to_remove] = result[i][j];
             }
         }
     }
-    
-    /*point p;
-    for (int i = 0; i < height; i++) {
-        result[i] = (double*)malloc(sizeof(double)*width);
-        if (!result[i]) {
-            printf("Low memory\n");
-            return NULL;
-        }
-        p.y = p_start->y + i * step;
-        for (int j = 0; j < width; j++) {
-            p.x = p_start->x + j * step;
-            result[i][j] = Cp_2(&p, p_arr, j_n_p, gamma_t, m, alpha, time, r, num_p, delta, delta_t, collocation_points, separation_point_positions);
-            // cut too low or too high values
-            if (result[i][j] < minimums[cur_min%number_to_remove]) {
-                //printf("min: %f %d %d\n", result[i][j], i, j);
-                minimums[(++cur_min)%number_to_remove] = result[i][j];
-            } else if (result[i][j] > maximums[cur_min%number_to_remove]) {
-                //printf("max: %f %d %d\n", result[i][j], i, j);
-                maximums[(++cur_max)%number_to_remove] = result[i][j];
-            }
-        }
-    }*/
     
     if (cur_min <= number_to_remove) {
         *min = minimums[1];

@@ -11,13 +11,14 @@
 #import "DrawingTools.h"
 #import "MBProgressHUD.h"
 #import "OptionsViewController.h"
+#import "TraceCallback.h"
 
 @implementation lab1ViewController {
     figure* inputFigure;
     point** points_of_interest;
     point** collocation_points;
     point** normal_vectors;
-    double** gamma;
+    double*** gamma;
     
     int* separation_points_numbers;
     int* initial_separation_points_numbers;
@@ -39,6 +40,12 @@
     double* tresholds;
     
     BOOL processingNow;
+    
+    point* startPoint;
+    CGSize size;
+    
+    UIImage* startImage;
+    UIImage* resultImage;
 }
 @synthesize statusLabel, pointNumberTextField;
 
@@ -271,7 +278,7 @@ double f(double x, double radius) {
 -(void)redraw {
     processingNow = YES;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
-    [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    //[MBProgressHUD showHUDAddedTo:self.view animated:NO];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         // TODO set time correctly
@@ -303,18 +310,6 @@ double f(double x, double radius) {
         delta_t = (double**)malloc(sizeof(double*));
         
         int totalTime = self.options.drawing_mode == MODE_TRACE ? self.options.trace_time : self.options.time;
-        
-        gamma = find_Gamma_2(*collocation_points, *points_of_interest, *normal_vectors, separation_points_numbers, totalTime, num_p, j_arr, trace, self.options.number_of_points, degreeToRad(self.options.alpha), self.options.gamma_0, self.options.delta, delta_t);
-        /*for (int i = 0; i <= totalTime - 1; i++) {
-         printf("delta2 %d: %f\n", i, (*delta_t)[i]);
-         }*/
-        
-        if (!gamma) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [self complain:@"Помилка обчислення гамма"];
-            processingNow = NO;
-            return;
-        }
         
         float width = self.imageView.frame.size.width*2;
         float height = self.imageView.frame.size.height*2;
@@ -349,222 +344,112 @@ double f(double x, double radius) {
         min = MAXFLOAT;
         max = -MAXFLOAT;
         
-        point* startPoint1 = malloc(sizeof(point));
-        startPoint1->x = -self.options.real_width/2;
-        startPoint1->y = self.options.drawing_mode == MODE_TRACE ? -self.options.real_height : -self.options.real_height/2;
-        if (images) {
-            [images removeAllObjects];
-        } else {
-            images = [[NSMutableArray alloc] init];
+        if (startPoint) {
+            free(startPoint);
         }
-        for (int i = 0; i < numberOfThreads; i++) {
-            [images addObject:[NSNull null]];
-        }
-        if (self.options.drawing_mode != MODE_TRACE) {
-            [self startCalculationThreadWithStartPoint:startPoint1 andSize:CGSizeMake(width, height/2) andNumber:0];
-            
-            point* startPoint2 = malloc(sizeof(point));
-            startPoint2->x = -self.options.real_width/2;
-            startPoint2->y = 0;
-            [self startCalculationThreadWithStartPoint:startPoint2 andSize:CGSizeMake(width, height/2) andNumber:1];
-        } else {
-            [self startCalculationThreadWithStartPoint:startPoint1 andSize:CGSizeMake(width, height) andNumber:0];
-        }
-    });
-}
-
--(void)startCalculationThreadWithStartPoint:(point*)startPoint andSize:(CGSize)size andNumber:(int)currentNumber{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void) {
-        double** values;
-        double* tempMin = malloc(sizeof(double));
-        double* tempMax = malloc(sizeof(double));
-        *tempMin = MAXFLOAT;
-        *tempMax = -MAXFLOAT;
-
-        switch (self.options.drawing_mode) {
-            case MODE_PHI:
-                if (self.options.dipol_presentation) {
-                    values = phi_dipol_for_rect_2(startPoint, step, size.width, size.height, points_of_interest, *j_arr, collocation_points, gamma[self.options.time-1], self.options.number_of_points, degreeToRad(self.options.alpha), tempMin, tempMax, *trace, self.options.time, num_p);
-                } else {
-                    values = phi_for_rect_2(startPoint, step, size.width, size.height, points_of_interest, gamma[self.options.time-1], self.options.number_of_points, degreeToRad(self.options.alpha), tempMin, tempMax, trace, j_arr, self.options.time, num_p);
-                }
-                break;
-            case MODE_PSI:
-                values = ksi_for_rect_2(startPoint, step, size.width, size.height, points_of_interest, *trace, gamma[self.options.time-1], self.options.number_of_points, degreeToRad(self.options.alpha), self.options.delta, tempMin, tempMax, j_arr, self.options.time, num_p);
-                break;
-            case MODE_CP:
-                values = Cp_for_rect_2(startPoint, step, size.width, size.height, points_of_interest, gamma[self.options.time-1], self.options.number_of_points, degreeToRad(self.options.alpha), tempMin, tempMax, self.options.delta, j_arr, gamma, self.options.time, *trace, num_p, *delta_t, collocation_points, separation_points_numbers, self.options.value_window_size);
-                break;
-            case MODE_TRACE:
-                values = nil;
-                break;
-        }
-
-        UIImage* phiImage;
-        if (self.options.drawing_mode != MODE_TRACE) {
-            if (!values || !*values) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self complain:@"Помилка обчислення"];
-                processingNow = NO;
-                return;
-            }
-            
-            if (*tempMin < min) {
-                min = *tempMin;
-            }
-            if (*tempMax > max) {
-                max = *tempMax;
-            }
-            
-            NSLog(@"Calculating colors");
-            
-            if (finishedNumber == numberOfThreads - 1) {
-                // last thread to finish will calculate colors
-                [colors removeAllObjects];
-                
-                //printf("min: %f\n", min);
-                //printf("max: %f\n", max);
-                //min = -2;
-                //max = 2;
-                
-                double colorStep = (max - min) / self.options.number_of_colors;
-                for (int i = 0; i < self.options.number_of_colors; i++) {
-                    tresholds[i] = min+colorStep*(i+1);
-                    //printf("thresholds %f\n", tresholds[i]);
-                }
-                
-                for (int i = 0; i < self.options.number_of_colors; i++) {
-                    [colors addObject:[DrawingTools colorForValue:tresholds[i] withBottomThreshold:min andTopThreshold:max]];
-                }
-                finishedNumber++;
-            } else {
-                finishedNumber++;
-                printf("waiting\n");
-                while (finishedNumber < numberOfThreads) {
-                    // wait
-                    //printf("waiting\n");
-                }
-            }
-            
-            free(tempMin);
-            free(tempMax);
-            
-            printf("calculating colors\n");
-            int** colorNumbers = [self calculateColorsForValues:values size:size];
-            if (!colorNumbers || !*colorNumbers) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self complain:@"Помилка обчислення кольорів"];
-                processingNow = NO;
-                return;
-            }
-            
-            for (int i = 0; i < size.height; i++) {
-                free(values[i]);
-            }
-            free(values);
-            
-            NSLog(@"Loading image");
-            
-            phiImage = [DrawingTools createImageWithSize:size andColorNumbers:colorNumbers andColors:colors];
-            if (!phiImage) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self complain:@"Помилка створення графіку"];
-                processingNow = NO;
-                return;
-            }
-            for (int i = 0; i < size.height; i++) {
-                free(colorNumbers[i]);
-            }
-            free(colorNumbers);
-        } else {
-            CGRect rect = CGRectMake(0, 0, size.width, size.height);
-            // Create a 1 by 1 pixel context
-            UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
-            [[UIColor blackColor] setFill];
-            UIRectFill(rect);   // Fill it with your color
-            phiImage = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-        }
+        
+        startPoint = malloc(sizeof(point));
+        startPoint->x = -self.options.real_width/2;
+        startPoint->y = self.options.drawing_mode == MODE_TRACE ? -self.options.real_height : -self.options.real_height/2;
+        
+        size = CGSizeMake(width, height);
+        
+        gamma = (double***)malloc(sizeof(double**));
+        
+        CGRect rect = CGRectMake(0, 0, size.width, size.height);
+        // Create a 1 by 1 pixel context
+        UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+        [[UIColor blackColor] setFill];
+        UIRectFill(rect);   // Fill it with your color
+        startImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
         
         point* screenPoints = malloc(sizeof(point)*inputFigure->point_number);
         for (int i = 0; i < inputFigure->point_number; i++) {
             screenPoints[i].x = (inputFigure->points[i].x - startPoint->x)/step;
             screenPoints[i].y = (inputFigure->points[i].y - startPoint->y)/step;
-            //printf("screenpoint %f %f\n", inputFigure->points[i].x, inputFigure->points[i].y);
         }
+        
+        startImage = [DrawingTools drawConnectedPoints:screenPoints number:inputFigure->point_number withWidth:3. andColor:[UIColor yellowColor] onImage:startImage];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void) {
+            find_Gamma_2((__bridge void*)self, gamma, *collocation_points, *points_of_interest, *normal_vectors, separation_points_numbers, totalTime, num_p, j_arr, trace, self.options.number_of_points, degreeToRad(self.options.alpha), self.options.gamma_0, self.options.delta, delta_t);
+        });
+        
+        processingNow = NO;
+    });
+}
 
-        UIImage* resultImage = [DrawingTools drawConnectedPoints:screenPoints number:inputFigure->point_number withWidth:3. andColor:[UIColor yellowColor] onImage:phiImage];
-        phiImage = nil;
-        free(screenPoints);
-        
-        int totalTime = (self.options.drawing_mode == MODE_TRACE ? self.options.trace_time : self.options.time);
-        
-        point* screenPoints2 = malloc(sizeof(point) * (totalTime + 1));
-        UIImage* traceImage = resultImage;
-        for (int j = 0; j < num_p; j++) {
-            for (int i = 0; i < totalTime; i++) {
-                screenPoints2[i].x = ((*trace)[j][i].x - startPoint->x)/step;
-                screenPoints2[i].y = ((*trace)[j][i].y - startPoint->y)/step;
-                //NSLog(@"Point x = %f, y = %f", (*trace)[j][i].x, (*trace)[j][i].y);
-                //printf("screenpoint %f %f\n", inputFigure->points[i].x, inputFigure->points[i].y);
-            }
-            screenPoints2[totalTime].x = ((*points_of_interest + separation_points_numbers[j])->x - startPoint->x)/step;
-            screenPoints2[totalTime].y = ((*points_of_interest + separation_points_numbers[j])->y - startPoint->y)/step;
-            if (self.options.drawing_mode != MODE_TRACE) {
-                traceImage = [DrawingTools drawConnectedPoints:screenPoints2 number:totalTime+1 withWidth:3. andColor:[UIColor redColor] onImage:traceImage];
-            } else {
-                traceImage = [DrawingTools drawPoints:screenPoints2 number:totalTime+1 withWidth:4. withColor:[UIColor whiteColor] onImage:traceImage];
-            }
+void drawCurrentTrace(void *slf, int time) {
+    [(__bridge id)slf drawTraceWithTime:time - 1];
+}
+
+-(void)drawTraceWithTime:(int)currentTime {
+    point* screenPoints2 = malloc(sizeof(point) * (currentTime + 1));
+    for (int j = 0; j < num_p; j++) {
+        for (int i = 0; i < currentTime; i++) {
+            screenPoints2[i].x = ((*trace)[j][i].x - startPoint->x)/step;
+            screenPoints2[i].y = ((*trace)[j][i].y - startPoint->y)/step;
         }
-        resultImage = nil;
-        free(startPoint);
-        free(screenPoints2);
-
+        screenPoints2[currentTime].x = ((*points_of_interest + separation_points_numbers[j])->x - startPoint->x)/step;
+        screenPoints2[currentTime].y = ((*points_of_interest + separation_points_numbers[j])->y - startPoint->y)/step;
+        if (j == 0) {
+            resultImage = [DrawingTools drawPoints:screenPoints2 number:currentTime+1 withWidth:4. withColor:[UIColor whiteColor] onImage:startImage];
+        } else {
+            UIImage* r2 = [DrawingTools drawPoints:screenPoints2 number:currentTime+1 withWidth:4. withColor:[UIColor whiteColor] onImage:resultImage];
+            CGImageRelease(resultImage.CGImage);
+            resultImage = r2;
+        }
+    }
+    //free(startPoint);
+    free(screenPoints2);
+    
+    /*if (self.options.show_V) {
+        int resultNum = 0;
+        point* startPoint1 = malloc(sizeof(point));
+        startPoint1->x = -self.options.real_width/2;
+        startPoint1->y = self.options.drawing_mode == MODE_TRACE ? -self.options.real_height : -self.options.real_height/2;
+        vect* v_vectors = V_for_rect_2(startPoint1, step, resultImage.size.width, resultImage.size.height, self.options.v_window_size, points_of_interest, (*gamma)[currentTime-2], self.options.number_of_points, degreeToRad(self.options.alpha), &resultNum, self.options.delta, trace, j_arr, currentTime-1, num_p);
+     
+        UIImage* r3 = [DrawingTools drawVectors:v_vectors number:resultNum withWidth:1. andColor:[UIColor yellowColor] onImage:resultImage];
+        CGImageRelease(resultImage.CGImage);
+        resultImage = r3;
+        free(startPoint1);
+        free(v_vectors);
+    }*/
+    
+    
+    if (self.options.drawing_mode == MODE_TRACE) {
+        resultImage = [[UIImage alloc] initWithCGImage: resultImage.CGImage
+                                                 scale: 1.0
+                                           orientation: UIImageOrientationRight];
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        if (!self.imageScrollView) {
+            self.imageScrollView = [[KFImageZoomView alloc] initWithImage:resultImage atLocation:CGPointMake(0, 0)];
+            self.imageScrollView.frame = self.imageView.frame;
+            if (self.options.drawing_mode == MODE_TRACE) {
+                self.imageScrollView.minimumZoomScale = 0.15;
+            }
+            [self.view addSubview:self.imageScrollView];
+            
+            self.axisView = [[PlotView alloc] initWithFrame:self.imageScrollView.frame];
+            [self.axisView setBackgroundColor:[UIColor clearColor]];
+            [self.axisView setUserInteractionEnabled:NO];
+            [self.view addSubview:self.axisView];
+            
+            self.imageScrollView.delegate = self;
+            
+            [self.imageScrollView zoomToRect:CGRectMake(0, 0, resultImage.size.width, resultImage.size.height) animated:NO];
+        } else {
+            [self.imageScrollView.imageView setImage:resultImage];
+        }
         
-        [images replaceObjectAtIndex:currentNumber withObject:traceImage];
         
-        if (++finishedImagesNumber == numberOfThreads ) {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                UIImage* fullImage = [DrawingTools combineImages:images];
-                
-                if (self.options.show_V) {
-                    int resultNum = 0;
-                    point* startPoint1 = malloc(sizeof(point));
-                    startPoint1->x = -self.options.real_width/2;
-                    startPoint1->y = self.options.drawing_mode == MODE_TRACE ? -self.options.real_height : -self.options.real_height/2;
-                    vect* v_vectors = V_for_rect_2(startPoint1, step, fullImage.size.width, fullImage.size.height, self.options.v_window_size, points_of_interest, gamma[totalTime-1], self.options.number_of_points, degreeToRad(self.options.alpha), &resultNum, self.options.delta, trace, j_arr, totalTime, num_p);
-                    
-                    fullImage = [DrawingTools drawVectors:v_vectors number:resultNum withWidth:1. andColor:[UIColor yellowColor] onImage:fullImage];
-                    free(startPoint1);
-                    free(v_vectors);
-                }
-                
-                if (self.imageScrollView) {
-                    [self.imageScrollView removeFromSuperview];
-                    self.imageScrollView = nil;
-                }
-                self.imageScrollView = [[KFImageZoomView alloc] initWithImage:fullImage atLocation:CGPointMake(0, 0)];
-                self.imageScrollView.frame = self.imageView.frame;
-                if (self.options.drawing_mode == MODE_TRACE) {
-                    self.imageScrollView.minimumZoomScale = 0.2;
-                }
-                [self.view addSubview:self.imageScrollView];
-                
-                if (self.axisView) {
-                    [self.axisView removeFromSuperview];
-                    self.axisView = nil;
-                }
-                self.axisView = [[PlotView alloc] initWithFrame:self.imageScrollView.frame];
-                [self.axisView setBackgroundColor:[UIColor clearColor]];
-                [self.axisView setUserInteractionEnabled:NO];
-                [self.view addSubview:self.axisView];
-
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                
-                self.imageScrollView.delegate = self;
-                [self.imageScrollView zoomToRect:CGRectMake(0, 0, fullImage.size.width, fullImage.size.height) animated:YES];
-                processingNow = NO;
-            });
+        if (resultImage) {
+            CGImageRelease(resultImage.CGImage);
+            resultImage = nil;
         }
     });
 }

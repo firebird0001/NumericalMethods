@@ -20,6 +20,10 @@ double phi(point* p, point** p_arr, double* gamma, int m, double alpha);
 double phi_j(point* p, point* p_j);
 double phi_dipol_2(point* p, point** p_arr, double** J, point** p_col, double* gamma, int m, double alpha, point** r, int n_t, int num_p);
 double phi_dipol(point* p, point** p_arr, point** p_col, double* gamma, int m, double alpha);
+
+point** V_2_init(point* p, point** p_arr, double* gamma_t, int m, double alpha, int n_t, double delta);
+void V_2_cons(point* result, point* p, point** p_arr, double* gamma_t, int m, double alpha, point*** r, double*** j_n_p, int n_t, int num_p, double delta);
+
 point* V_2(point* p, point** p_arr, double* gamma_t, int m, double alpha, point*** r, double*** j_n_p, int n_t, int num_p, double delta);
 point* V(point* p, point** p_arr, double* gamma, int m, double alpha, double delta);
 point* V_inf(double alpha);

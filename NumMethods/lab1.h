@@ -15,8 +15,9 @@ void get_points_from_simple_figure(figure* fig, int point_number, point** points
 double figure_length(figure* fig);
 void place_for_point(point* p1, point* p2, double weight, point* result);
 double part_length(figure* fig, int part_start);
-double** find_Gamma_2(point* collocation_points, point* points_of_interest, point* normal_points, int* separation_points_positions, int time, int p, double*** j_n_p, point*** r, int m, double alpha, double gamma_0, double delta, double** delta_t);
-double* find_Gamma(point* collocation_points, point* points_of_interest, point* normal_points, int m, double alpha, double gamma_0, double delta);
+
+void find_Gamma_2(void* callback, double*** gamma_r, point* collocation_points, point* points_of_interest, point* normal_points, int* separation_points_positions, int time, int p, double*** j_n_p, point*** r, int m, double alpha, double gamma_0, double delta, double** delta_t);
+
 double** phi_for_rect_2(point* p_start, double step, int width, int height, point** p_arr, double* gamma, int m, double alpha, double* min, double* max, point*** r, double*** j_n_p, int n_t, int num_p);
 double** phi_for_rect(point* p_start, double step, int width, int height, point** p_arr, double* gamma, int m, double alpha, double* min, double* max);
 double** phi_dipol_for_rect_2(point* p_start, double step, int width, int height, point** p_arr, double** J, point** p_col, double* gamma, int m, double alpha, double* min, double* max, point** r, int n_t, int num_p);

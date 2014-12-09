@@ -57,6 +57,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1B484B491A36632C00380581 /* TraceCallback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TraceCallback.h; sourceTree = "<group>"; };
 		1B5F50651855CEE7007F2EAF /* DrawingTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingTools.h; sourceTree = "<group>"; };
 		1B5F50661855CEE7007F2EAF /* DrawingTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawingTools.m; sourceTree = "<group>"; };
 		1B5F506918564A0D007F2EAF /* Pair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pair.h; sourceTree = "<group>"; };
@@ -101,7 +102,7 @@
 		1B8606E7184CFA5B005D34FB /* DrawingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingViewController.h; sourceTree = "<group>"; };
 		1B8606E8184CFA5B005D34FB /* DrawingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawingViewController.m; sourceTree = "<group>"; };
 		1B8606E9184CFA5B005D34FB /* DrawingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DrawingViewController.xib; sourceTree = "<group>"; };
-		1BD2475F17DF0AC4003926CF /* Contour 2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Contour 2.app"; path = "Contour 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BD2475F17DF0AC4003926CF /* Contour 2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Contour 2.app"; path = Trace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BD2476217DF0AC4003926CF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1BD2476417DF0AC4003926CF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1BD2476617DF0AC4003926CF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -290,6 +291,7 @@
 				1B5F50B11858B54E007F2EAF /* OptionsViewController.h */,
 				1B5F50B21858B54E007F2EAF /* OptionsViewController.m */,
 				1B5F50B31858B54E007F2EAF /* OptionsViewController.xib */,
+				1B484B491A36632C00380581 /* TraceCallback.h */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
