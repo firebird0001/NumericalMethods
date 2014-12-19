@@ -11,6 +11,6 @@
 
 // This is the C "trampoline" function that will be used
 // to invoke a specific Objective-C method FROM C++
-void drawCurrentTrace(void *slf, int time);
+bool drawCurrentTrace(void *slf, int time);
 
 #endif

@@ -40,14 +40,17 @@
     double* tresholds;
     
     BOOL processingNow;
+    BOOL drawingNow;
     
     point* startPoint;
     CGSize size;
     
     UIImage* startImage;
-    UIImage* resultImage;
+    
+    BOOL shouldRestartCalculations;
 }
 @synthesize statusLabel, pointNumberTextField;
+@synthesize resultImage, isPausedByUser;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -62,11 +65,13 @@
 {
     [super viewDidLoad];
     
-    UIBarButtonItem* newDrawing = [[UIBarButtonItem alloc] initWithTitle:@"Нова фігура" style:UIBarButtonItemStyleBordered target:self action:@selector(newDrawing)];
-    UIBarButtonItem* optionsEdit = [[UIBarButtonItem alloc] initWithTitle:@"Параметри" style:UIBarButtonItemStyleBordered target:self action:@selector(showOptions)];
+    //UIBarButtonItem* newDrawing = [[UIBarButtonItem alloc] initWithTitle:@"Нова фігура" style:UIBarButtonItemStyleBordered target:self action:@selector(newDrawing)];
+    //UIBarButtonItem* optionsEdit = [[UIBarButtonItem alloc] initWithTitle:@"Параметри" style:UIBarButtonItemStyleBordered target:self action:@selector(showOptions)];
     
-    self.navigationItem.leftBarButtonItem = newDrawing;
-    self.navigationItem.rightBarButtonItem = optionsEdit;
+    //self.navigationItem.leftBarButtonItem = newDrawing;
+    //self.navigationItem.rightBarButtonItem = optionsEdit;
+    
+    [self.navigationController setNavigationBarHidden:YES];
     
     if (!self.options) {
         self.options = [[Options alloc] initDefault];
@@ -75,22 +80,6 @@
     if (!self.points) {
         [self newDrawing];
     }
-    
-    switch (self.options.drawing_mode) {
-        case MODE_PHI:
-            [self.modeControl setSelectedSegmentIndex:0];
-            break;
-        case MODE_PSI:
-            [self.modeControl setSelectedSegmentIndex:1];
-            break;
-        case MODE_CP:
-            [self.modeControl setSelectedSegmentIndex:2];
-            break;
-        case MODE_TRACE:
-            [self.modeControl setSelectedSegmentIndex:3];
-            break;
-    }
-    [self.modeControl addTarget:self action:@selector(modeChange:) forControlEvents:UIControlEventValueChanged];
     
     self.navigationController.navigationBar.translucent = NO;
     if ([self respondsToSelector:@selector(edgesForExtendedLayout)])
@@ -105,48 +94,31 @@
 	currentPopoverCellIndex = -1;
 
     processingNow = NO;
+    
+    isPausedByUser = YES;
+    shouldRestartCalculations = NO;
 }
 
 -(void)newDrawing {
     if (processingNow) {
         return;
     }
+    isPausedByUser = YES;
     DrawingViewController* drawingViewController = [[DrawingViewController alloc] initWithNibName:@"DrawingViewController" bundle:nil];
     drawingViewController.delegate = self;
     [self presentViewController:drawingViewController animated:YES completion:nil];
+    
 }
 
 -(void)showOptions {
     if (processingNow) {
         return;
     }
+    isPausedByUser = YES;
     OptionsViewController* optionsViewController = [[OptionsViewController alloc] initWithNibName:@"OptionsViewController" bundle:nil];
     optionsViewController.delegate = self;
     optionsViewController.options = self.options;
     [self presentViewController:[[UINavigationController alloc] initWithRootViewController:optionsViewController] animated:YES completion:nil];
-}
-
--(void)modeChange:(id)sender {
-    if (processingNow) {
-        return;
-    }
-    
-    UISegmentedControl *segmentedControl = (UISegmentedControl *) sender;
-    switch (segmentedControl.selectedSegmentIndex) {
-        case 0: // Phi
-            self.options.drawing_mode = MODE_PHI;
-            break;
-        case 1: // Psi
-            self.options.drawing_mode = MODE_PSI;
-            break;
-        case 2: // Cp
-            self.options.drawing_mode = MODE_CP;
-            break;
-        case 3: // Trace
-            self.options.drawing_mode = MODE_TRACE;
-            break;
-    }
-    [self redraw];
 }
 
 #pragma mark process drawing
@@ -277,6 +249,7 @@ double f(double x, double radius) {
 
 -(void)redraw {
     processingNow = YES;
+    drawingNow = YES;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     //[MBProgressHUD showHUDAddedTo:self.view animated:NO];
     
@@ -374,35 +347,64 @@ double f(double x, double radius) {
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(void) {
             find_Gamma_2((__bridge void*)self, gamma, *collocation_points, *points_of_interest, *normal_vectors, separation_points_numbers, totalTime, num_p, j_arr, trace, self.options.number_of_points, degreeToRad(self.options.alpha), self.options.gamma_0, self.options.delta, delta_t);
+            BOOL finished = YES;
         });
         
         processingNow = NO;
+        isPausedByUser = NO;
     });
 }
 
-void drawCurrentTrace(void *slf, int time) {
-    [(__bridge id)slf drawTraceWithTime:time - 1];
+-(void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    drawingNow = NO;
+    isPausedByUser = YES;
 }
 
--(void)drawTraceWithTime:(int)currentTime {
+- (IBAction)stop:(id)sender {
+    isPausedByUser = YES;
+}
+
+-(BOOL)isInPausedState {
+    return isPausedByUser;
+}
+
+bool drawCurrentTrace(void *slf, int time) {
+    if ([(__bridge id)slf isInPausedState]) {
+        return NO;
+        //[NSThread sleepForTimeInterval:.5];
+    }
+    return [(__bridge id)slf drawTraceWithTime:time - 1];
+}
+
+-(bool)drawTraceWithTime:(int)currentTime {
+    if (!drawingNow || isPausedByUser) {
+        return false;
+    }
+
     point* screenPoints2 = malloc(sizeof(point) * (currentTime + 1));
+    bool* type = malloc(sizeof(bool) * (currentTime + 1));
     for (int j = 0; j < num_p; j++) {
         for (int i = 0; i < currentTime; i++) {
             screenPoints2[i].x = ((*trace)[j][i].x - startPoint->x)/step;
             screenPoints2[i].y = ((*trace)[j][i].y - startPoint->y)/step;
+            //NSLog(@"%f", (*gamma)[j][i]);
+            type[i] = ((*gamma)[j][i] > 0);
         }
         screenPoints2[currentTime].x = ((*points_of_interest + separation_points_numbers[j])->x - startPoint->x)/step;
         screenPoints2[currentTime].y = ((*points_of_interest + separation_points_numbers[j])->y - startPoint->y)/step;
+        type[currentTime] = true;
         if (j == 0) {
-            resultImage = [DrawingTools drawPoints:screenPoints2 number:currentTime+1 withWidth:4. withColor:[UIColor whiteColor] onImage:startImage];
+            resultImage = [DrawingTools drawPoints:screenPoints2 number:currentTime+1 withWidth:4. andTypes:type onImage:startImage];
         } else {
-            UIImage* r2 = [DrawingTools drawPoints:screenPoints2 number:currentTime+1 withWidth:4. withColor:[UIColor whiteColor] onImage:resultImage];
+            UIImage* r2 = [DrawingTools drawPoints:screenPoints2 number:currentTime+1 withWidth:4. andTypes:type onImage:resultImage];
             CGImageRelease(resultImage.CGImage);
             resultImage = r2;
         }
     }
     //free(startPoint);
     free(screenPoints2);
+    free(type);
     
     /*if (self.options.show_V) {
         int resultNum = 0;
@@ -419,39 +421,40 @@ void drawCurrentTrace(void *slf, int time) {
     }*/
     
     
-    if (self.options.drawing_mode == MODE_TRACE) {
+    if (resultImage && resultImage.CGImage) {
         resultImage = [[UIImage alloc] initWithCGImage: resultImage.CGImage
                                                  scale: 1.0
                                            orientation: UIImageOrientationRight];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^(void) {
-        if (!self.imageScrollView) {
-            self.imageScrollView = [[KFImageZoomView alloc] initWithImage:resultImage atLocation:CGPointMake(0, 0)];
-            self.imageScrollView.frame = self.imageView.frame;
-            if (self.options.drawing_mode == MODE_TRACE) {
-                self.imageScrollView.minimumZoomScale = 0.15;
+        @synchronized(self) {
+            if (isPausedByUser || !resultImage || !resultImage.CGImage) {
+                return;
             }
-            [self.view addSubview:self.imageScrollView];
+            if (!self.imageScrollView) {
+                self.imageScrollView = [[KFImageZoomView alloc] initWithImage:resultImage atLocation:CGPointMake(0, 0)];
+                self.imageScrollView.frame = self.imageView.frame;
+                if (self.options.drawing_mode == MODE_TRACE) {
+                    self.imageScrollView.minimumZoomScale = 0.17;
+                }
+                [self.view insertSubview:self.imageScrollView belowSubview:self.stopButton];
+                
+                self.imageScrollView.delegate = self;
+                
+                [self.imageScrollView zoomToRect:CGRectMake(0, 0, resultImage.size.width, resultImage.size.height) animated:NO];
+            } else {
+                [self.imageScrollView.imageView setImage:resultImage];
+            }
             
-            self.axisView = [[PlotView alloc] initWithFrame:self.imageScrollView.frame];
-            [self.axisView setBackgroundColor:[UIColor clearColor]];
-            [self.axisView setUserInteractionEnabled:NO];
-            [self.view addSubview:self.axisView];
-            
-            self.imageScrollView.delegate = self;
-            
-            [self.imageScrollView zoomToRect:CGRectMake(0, 0, resultImage.size.width, resultImage.size.height) animated:NO];
-        } else {
-            [self.imageScrollView.imageView setImage:resultImage];
-        }
-        
-        
-        if (resultImage) {
-            CGImageRelease(resultImage.CGImage);
-            resultImage = nil;
+            if (resultImage && resultImage.CGImage) {
+                CGImageRelease(resultImage.CGImage);
+                resultImage = nil;
+            }
         }
     });
+    
+    return true;
 }
 
 #pragma mark drawing delegate
@@ -470,6 +473,8 @@ void drawCurrentTrace(void *slf, int time) {
 
 #pragma mark options delegate
 -(void)didEndEditing:(Options *)options inViewController:(OptionsViewController *)viewController {
+    isPausedByUser = NO;
+    shouldRestartCalculations = YES;
     self.options = options;
     [self dismissViewControllerAnimated:YES completion:nil];
     [self processPoints];

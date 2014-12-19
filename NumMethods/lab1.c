@@ -215,10 +215,14 @@ void find_Gamma_2(void* callback, double*** gamma_r, point* collocation_points, 
         }
     }
     
+    bool continueCalc = true;
     // START CALCULATIONS
     for (int current_time = 0; current_time < time; current_time++) {
-        if (current_time > 0 && current_time % 1 == 0) {
-            drawCurrentTrace(callback, current_time);
+        if (true) {//current_time > 0 && current_time % 5 == 0) {
+            continueCalc = drawCurrentTrace(callback, current_time);
+            if (!continueCalc) {
+                break;
+            }
         }
         
         // there is (m-1) point of collocation
@@ -295,13 +299,21 @@ void find_Gamma_2(void* callback, double*** gamma_r, point* collocation_points, 
         }
     }
 
-    for (int i = 0; i < m - 1; i++) {
-        free(A[i]);
+    if (A) {
+        for (int i = 0; i < m - 1; i++) {
+            if (A[i]) {
+                free(A[i]);
+            }
+        }
+        free(A);
     }
-    free(A);
-    free(B);
+    if (B) {
+        free(B);
+    }
     
-    drawCurrentTrace(callback, time - 1);
+    if (continueCalc) {
+        drawCurrentTrace(callback, time - 1);
+    }
 }
 
 double* find_Gamma(point* collocation_points, point* points_of_interest, point* normal_points, int m, double alpha, double gamma_0, double delta) {

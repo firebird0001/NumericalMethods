@@ -16,7 +16,7 @@
     self.alpha = 0;
     self.delta = 0.034173567;
     self.gamma_0 = 0.1;
-    self.number_of_points = 30;
+    self.number_of_points = 15;
     self.number_of_colors = 20;
     self.drawing_mode = MODE_TRACE;
     self.show_V = YES;
@@ -27,7 +27,7 @@
     self.time = 12;
     self.v_window_size = 30;
     self.value_window_size = 16;
-    self.trace_time = 500;
+    self.trace_time = 700;
     self.trace_real_width = 14.;
     
     

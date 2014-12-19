@@ -32,8 +32,20 @@ const float LABEL_PADDING = 3;
     return self;
 }
 
+-(void)setLabelsHidden:(BOOL)hidden {
+    if (self.topLabel) {
+        [self.topLabel setHidden:hidden];
+    }
+    if (self.centerLabel) {
+        [self.centerLabel setHidden:hidden];
+    }
+    if (self.rightLabel) {
+        [self.rightLabel setHidden:hidden];
+    }
+}
+
 -(void)initLabels {
-    self.topLabel = [[UILabel alloc] init];
+    /*self.topLabel = [[UILabel alloc] init];
     [self.topLabel setTextColor:[UIColor whiteColor]];
     [self.topLabel setTextAlignment:NSTextAlignmentLeft];
     [self.topLabel setBackgroundColor:[UIColor clearColor]];
@@ -44,7 +56,7 @@ const float LABEL_PADDING = 3;
     self.rightLabel = [[UILabel alloc] init];
     [self.rightLabel setTextColor:[UIColor whiteColor]];
     [self.rightLabel setTextAlignment:NSTextAlignmentRight];
-    [self.rightLabel setBackgroundColor:[UIColor clearColor]];
+    [self.rightLabel setBackgroundColor:[UIColor clearColor]];*/
 }
 
 // Only override drawRect: if you perform custom drawing.

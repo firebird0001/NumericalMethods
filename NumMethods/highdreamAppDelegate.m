@@ -10,16 +10,20 @@
 #import "DrawingViewController.h"
 #import "lab1ViewController.h"
 
-@implementation highdreamAppDelegate
+@implementation highdreamAppDelegate {
+    lab1ViewController* viewController;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
     self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
 
-    lab1ViewController* viewController = [[lab1ViewController alloc] initWithNibName:@"lab1ViewController" bundle:nil];
+    viewController = [[lab1ViewController alloc] initWithNibName:@"lab1ViewController" bundle:nil];
     UINavigationController* navController = [[UINavigationController alloc] initWithRootViewController:viewController];
     self.window.rootViewController = navController;
     [self.window makeKeyAndVisible];
+    
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 
     return YES;
 }
@@ -28,6 +32,7 @@
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    viewController.isPausedByUser = YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

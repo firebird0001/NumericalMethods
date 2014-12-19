@@ -16,4 +16,6 @@
 @property(nonatomic, strong) UILabel* rightLabel;
 @property(nonatomic, strong) UILabel* centerLabel;
 
+-(void)setLabelsHidden:(BOOL)hidden;
+
 @end

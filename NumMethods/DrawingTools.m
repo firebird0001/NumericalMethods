@@ -114,12 +114,37 @@
     return outputImage;
 }
 
++(UIImage *)drawPoints:(point*)points number:(int)point_number withWidth:(float)width andTypes:(bool*)type onImage:(UIImage *)inputImage {
+    UIColor* red = [UIColor redColor];
+    UIColor* blue = [UIColor blueColor];
+    UIGraphicsBeginImageContext(inputImage.size);
+    [inputImage drawInRect:CGRectMake(0, 0, inputImage.size.width, inputImage.size.height)];
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineWidth(context, width);
+    //CGContextSetStrokeColorWithColor(context, [red CGColor]);
+    // Drawing code using above context goes here
+    for (int i = 0; i < point_number; i++) {
+        //CGContextMoveToPoint(context, [point CGPointValue].x - width / 2, [point CGPointValue].y - width / 2);
+        if (type[i]) {
+            CGContextSetStrokeColorWithColor(context, [red CGColor]);
+        } else {
+            CGContextSetStrokeColorWithColor(context, [blue CGColor]);
+        }
+        CGContextAddRect(context, CGRectMake(points[i].x - width / 2, points[i].y - width / 2, width, width));
+        CGContextStrokePath(context);
+    }
+    
+    UIImage *outputImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return outputImage;
+}
+
 +(UIImage *)drawConnectedPoints:(point*)points number:(int)point_number withWidth:(double)width andColor:(UIColor*)color onImage:(UIImage*) inputImage {
     UIGraphicsBeginImageContext(inputImage.size);
     [inputImage drawAtPoint:CGPointMake(0, 0)];
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetStrokeColorWithColor(context, [color CGColor]);
     CGContextSetLineWidth(context, width);
+    CGContextSetStrokeColorWithColor(context, [color CGColor]);
     // Drawing code using above context goes here
     for (int i = 0; i < point_number-1; i++) {
         CGContextMoveToPoint(context, points[i].x, points[i].y);

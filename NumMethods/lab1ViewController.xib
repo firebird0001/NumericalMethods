@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="lab1ViewController">
             <connections>
                 <outlet property="imageView" destination="58" id="63"/>
                 <outlet property="modeControl" destination="66" id="67"/>
+                <outlet property="stopButton" destination="2xQ-Mr-EJA" id="ayz-AY-O8A"/>
                 <outlet property="view" destination="1" id="3"/>
             </connections>
         </placeholder>
@@ -18,9 +19,9 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="58">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="525"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                 </imageView>
-                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="66">
+                <segmentedControl hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="66">
                     <rect key="frame" x="107" y="534" width="208" height="29"/>
                     <segments>
                         <segment title="Фі"/>
@@ -29,7 +30,7 @@
                         <segment title="Слід"/>
                     </segments>
                 </segmentedControl>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yxt-tP-KFe">
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yxt-tP-KFe">
                     <rect key="frame" x="0.0" y="533" width="104" height="30"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="104" id="46X-r0-Oas"/>
@@ -41,16 +42,27 @@
                         <action selector="showPopover:" destination="-1" eventType="touchUpInside" id="YzY-dG-yVc"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2xQ-Mr-EJA">
+                    <rect key="frame" x="115" y="510" width="90" height="50"/>
+                    <state key="normal" title="Стоп">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="stop:" destination="-1" eventType="touchUpInside" id="rif-Vn-4o8"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="58" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="96T-WG-yuT"/>
                 <constraint firstItem="66" firstAttribute="leading" secondItem="Yxt-tP-KFe" secondAttribute="trailing" constant="3" id="ABD-zg-Vdz"/>
+                <constraint firstAttribute="bottom" secondItem="2xQ-Mr-EJA" secondAttribute="bottom" constant="8" id="Bmv-ic-ha0"/>
                 <constraint firstAttribute="bottom" secondItem="Yxt-tP-KFe" secondAttribute="bottom" constant="5" id="OuJ-8P-1fB"/>
                 <constraint firstItem="58" firstAttribute="top" secondItem="1" secondAttribute="top" id="PZ4-Gq-pfp"/>
+                <constraint firstAttribute="centerX" secondItem="2xQ-Mr-EJA" secondAttribute="centerX" id="TEc-4w-XDQ"/>
                 <constraint firstAttribute="trailing" secondItem="58" secondAttribute="trailing" id="Zp9-uf-Xvv"/>
                 <constraint firstItem="Yxt-tP-KFe" firstAttribute="centerY" secondItem="66" secondAttribute="centerY" id="f8c-L6-YmV"/>
-                <constraint firstItem="Yxt-tP-KFe" firstAttribute="top" secondItem="58" secondAttribute="bottom" constant="8" symbolic="YES" id="liB-nY-TIQ"/>
+                <constraint firstItem="Yxt-tP-KFe" firstAttribute="top" secondItem="58" secondAttribute="bottom" constant="-35" id="liB-nY-TIQ"/>
                 <constraint firstItem="58" firstAttribute="leading" secondItem="Yxt-tP-KFe" secondAttribute="leading" id="scr-tm-sB1"/>
                 <constraint firstAttribute="trailing" secondItem="66" secondAttribute="trailing" constant="5" id="xVy-Bf-QCf"/>
             </constraints>

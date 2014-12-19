@@ -29,8 +29,13 @@
 @property (strong, nonatomic) NSArray* points;
 @property (strong, nonatomic) Options* options;
 
+@property (strong, nonatomic) UIImage* resultImage;
+@property (assign, nonatomic) BOOL isPausedByUser;
+
 @property (nonatomic, retain) WEPopoverController *w_popoverController;
 
 - (IBAction)showPopover:(id)sender;
+@property (strong, nonatomic) IBOutlet UIButton *stopButton;
+- (IBAction)stop:(id)sender;
 
 @end
